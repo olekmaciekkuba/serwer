@@ -5,12 +5,14 @@
 package serwer;
 
 import com.esotericsoftware.minlog.Log;
-import java.awt.Dimension;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 /**
@@ -20,31 +22,38 @@ import javax.swing.JTextField;
 public class przycisk {
     
     JButton przycisk;
-    JTextField log;
+    JTextArea log;
     JTextField send;
     JFrame okno,okno2;
+   
+    JScrollPane scroll;
     przycisk(){
         
+                
                 okno = new JFrame();
                 okno.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
                 
+                
                 przycisk = new JButton();
                 przycisk.setText("Run server");
-//               okno.setBounds(0,0,300,300);
-//                
-//                log = new JTextField();
-//                log.setText(null);
-//                log.setBounds(0,0,300,200);
-//
-//                send = new JTextField();
-//                send.setText(null);
-//                send.setBounds(0, 200, 300, 30);
-//                okno.add(log);
-//                okno.add(send);
+                okno.setSize(317, 320);
+            
+                okno.setLayout(null);
+                log = new JTextArea();
+                //log.setText(null);
+                log.setBounds(0,0,300,200);
+                scroll = new JScrollPane(log);
+                send = new JTextField();
+                send.setText(null);
+                send.setBounds(0, 200, 300, 30);
+                okno.add(log);
+                okno.add(send);
                 
-                 okno.add(przycisk);
-                 okno.pack();
-                
+                log.setEditable(false);
+                okno.add(scroll);
+                okno.add(przycisk);
+                przycisk.setBounds(0,230 , 300, 50);
+               
                 okno.setVisible(true);
                 przycisk.addActionListener(new java.awt.event.ActionListener() {
                     @Override
@@ -56,6 +65,32 @@ public class przycisk {
                         }
                     }
                 });  
+                
+                send.addKeyListener(new java.awt.event.KeyListener() {
+
+                    @Override
+                    public void keyTyped(KeyEvent e) {
+                    }
+
+                    @Override
+                    public void keyPressed(KeyEvent e) {
+                        if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                            log.setText(log.getText()+"\n"+send.getText());
+                           
+                            send.setText("");
+                        }
+                    }
+
+                    @Override
+                    public void keyReleased(KeyEvent e) {
+                    }
+
+
+                  
+                    
+                });
+                
+                
     }
     
     

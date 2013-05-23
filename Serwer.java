@@ -77,18 +77,22 @@ public class Serwer {
 
                                         character.x += msg.x;
 					character.y += msg.y;
-                                        if(msg.x>0) character.right_move = true;
-                                        else if (msg.x<0) character.right_move = false;
+                                        character.a = msg.a;
+                                        character.b = msg.b;
                                         
-                                        if(msg.x == 0) character.move = false;
-                                        else character.move = true;
+                                      //  if(msg.x>0) character.right_move = true;
+                                        //else if (msg.x<0) character.right_move = false;
+                                        
+                                       // if(msg.x == 0) character.move = false;
+                                       // else character.move = true;
                                         
 					UpdateCharacter update = new UpdateCharacter();
 					update.id = character.id;
 					update.x = character.x;
 					update.y = character.y;
-                                        update.right_move = character.right_move;
-                                        update.move = character.move;
+                                        update.a = character.a;
+                                        update.b = character.b;
+                                        //update.attack = character.attack;
                                         
 					server.sendToAllUDP(update);
 					return;
@@ -105,6 +109,12 @@ public class Serwer {
                                        
                                         server.sendToAllTCP(info);
                                         return;
+                                }
+                                if (object instanceof Combat){
+                                        
+                                        //Combat info = (Combat)object;
+                                        
+                                        //character.attack = info.attack;
                                 }
 			}
                         

@@ -24,7 +24,12 @@ public class Network {
                 kryo.register(CharacterID.class);
                 kryo.register(SendChat.class);
                 kryo.register(SetMap.class);
+                kryo.register((Combat.class));
 	}
+        static public class Combat{
+                public boolean attack;
+        }
+        
         
         static public class SetMap{
                 public int id;
@@ -47,8 +52,10 @@ public class Network {
 
 	static public class UpdateCharacter {
 		public int id, x, y;
-                public boolean right_move;
-                public boolean move;
+//                public boolean right_move;
+//                public boolean move;
+//                public boolean attack;
+                public int a, b;
 	}
 
 	static public class AddCharacter {
@@ -61,6 +68,7 @@ public class Network {
 
 	static public class MoveCharacter {
 		public int x, y;
+                public int a, b;
                 MoveCharacter(){
                     x=0; y=0;
                 }
