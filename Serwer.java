@@ -14,10 +14,14 @@ import serwer.Network.*;
 
 public class Serwer {
     
-	private Server server;
+    
+    
+        przycisk2 Przycisk;
+	public Server server;
 	HashSet<Character> loggedIn = new HashSet();
         Timer zegar;
-	public Serwer () throws IOException {
+	public Serwer (przycisk2 a) throws IOException {
+                Przycisk = a;
 		server = new Server() {
                         @Override
 			protected Connection newConnection () {
@@ -31,7 +35,7 @@ public class Serwer {
 			public void received (Connection c, Object object) {
 				CharacterConnection connection = (CharacterConnection)c;
 				Character character = connection.character;
-
+                                System.out.println(connection.getRemoteAddressTCP());
 				if (object instanceof Register) {
                                     
 					if (character != null) return;
@@ -55,7 +59,11 @@ public class Serwer {
 					character.x = 320;
 					character.y = 500;
                                         character.image = register.image;
-                                        character.id=loggedIn.size()+1;
+                                        character.id = newID();
+                                        character.hp = 5;
+                                        character.frags = 0;
+                                        character.dead = 0;
+                                        character.immortal = false;
                                         CharacterID id = new CharacterID();
                                         id.id = character.id;
                                         if(loggedIn.size() == 0) {
@@ -64,7 +72,7 @@ public class Serwer {
                                         else character.admin = false;
                                         id.admin = character.admin;
                                         c.sendTCP(id);
-					
+					Przycisk.log.setText(Przycisk.log.getText()+"\n"+character.name+" dołączył do gry.");
                                         loggedIn(connection, character);
 					return;
 				}
@@ -79,20 +87,17 @@ public class Serwer {
 					character.y += msg.y;
                                         character.a = msg.a;
                                         character.b = msg.b;
-                                        
-                                      //  if(msg.x>0) character.right_move = true;
-                                        //else if (msg.x<0) character.right_move = false;
-                                        
-                                       // if(msg.x == 0) character.move = false;
-                                       // else character.move = true;
-                                        
+                                        character.attack = msg.attack;
+                                     
 					UpdateCharacter update = new UpdateCharacter();
 					update.id = character.id;
 					update.x = character.x;
 					update.y = character.y;
                                         update.a = character.a;
                                         update.b = character.b;
-                                        //update.attack = character.attack;
+                                        update.dead = character.dead;
+                                        update.frags = character.frags;
+                                        update.attack = character.attack;
                                         
 					server.sendToAllUDP(update);
 					return;
@@ -101,6 +106,7 @@ public class Serwer {
                                     
                                         SendChat info = (SendChat)object;
                                         server.sendToAllTCP(info);
+                                        Przycisk.log.setText(Przycisk.log.getText()+"\n"+info.napis);
                                         return;
                                 }
                                 if (object instanceof SetMap){
@@ -110,6 +116,33 @@ public class Serwer {
                                         server.sendToAllTCP(info);
                                         return;
                                 }
+                                if (object instanceof Dead){
+                                        Dead dead = (Dead) object;
+                                        
+                                        for (Character ch : loggedIn) {
+                                            if(ch.id == dead.characterID) {
+                                                ch.frags++;
+                                                break;
+                                            }
+                                              
+                                        }
+                                        
+                                        character.x = 320;
+					character.y = 500;
+                                        character.hp = 5;
+                                        character.dead ++;
+                                        NewPosition msg = new NewPosition();
+                                        msg.x = character.x;
+                                        msg.y = character.y;
+                                        msg.hp = character.hp;
+                                        c.sendTCP(msg);
+                                        
+                                }
+                                if (object instanceof Kick){
+                                        
+                                    server.sendToAllTCP((Kick) object);
+                                }
+                                
                                 if (object instanceof Combat){
                                         
                                         //Combat info = (Combat)object;
@@ -148,6 +181,19 @@ public class Serwer {
                 value = value.trim();
                 if (value.length() == 0) return false;
                 return true;
+        }
+        /**
+         * Szuka najwiekszego ID
+         */
+        private int newID(){
+            int najwiekszy=0;
+            for (Character character : loggedIn) {
+                
+			if(character.id>najwiekszy) najwiekszy = character.id;
+		}
+            
+            
+            return najwiekszy+1;
         }
         
         
